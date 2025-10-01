@@ -1,0 +1,11 @@
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  enum :role, { intern: 0, company: 1 }
+
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+          :jwt_authenticatable,
+          jwt_revocation_strategy: JwtDenylist
+
+end
