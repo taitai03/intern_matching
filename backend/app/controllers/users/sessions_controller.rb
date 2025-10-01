@@ -8,6 +8,6 @@ class Users::SessionsController < ApplicationController
   end
 
   def respond_to_on_destroy
-    render json: { message: 'Logged out successfully.' }, status: :ok
+    head :no_content
   end
 end
