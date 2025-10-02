@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role,setRole]=useState("")
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -22,10 +23,10 @@ export default function Home() {
           user: {
             email,
             password,
+            role
           },
         }),
       });
-
       if (!res.ok) {
         throw new Error("ログインに失敗しました");
       }
@@ -33,7 +34,12 @@ export default function Home() {
       const data = await res.json();
       localStorage.setItem("token", data.token); // トークンを保存
       alert("ログイン成功！");
-      router.push('/mainpage')
+      if (data.user.role === "intern"){
+        router.push('/mainpage')
+      }else{
+        router.push('/company')
+      }
+
     } catch (err) {
       alert(err.message);
     }
@@ -67,6 +73,35 @@ export default function Home() {
             className="border rounded-lg px-3 py-2"
             required
           />
+          <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  あなたはどちらですか？
+                </label>
+                <div className="mt-2 flex gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="role"
+                      value="intern"
+                      checked={role === "intern"}
+                      onChange={() => setRole("intern")}
+                      className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">インターン希望者</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="role"
+                      value="company"
+                      checked={role === "company"}
+                      onChange={() => setRole("company")}
+                      className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">企業担当者</span>
+                  </label>
+                </div>
+              </div>
           <button
             type="submit"
             className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
