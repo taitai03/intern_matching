@@ -1,5 +1,5 @@
 // app/auth/signup/page.js
-"use client"; // ← フロント側で動かすため必須
+"use client"; 
 
 
 import {useContext, useState} from "react"
