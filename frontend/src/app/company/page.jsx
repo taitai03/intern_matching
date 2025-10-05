@@ -1,64 +1,69 @@
 "use client";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CompanyDashboard() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [requirements, setRequirements] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
+  const [internships, setInternships] = useState([]);
+  const router = useRouter();
 
-    const res = await fetch("http://localhost:8080/internships", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        internship: { title, description, requirements },
-      }),
-    });
-
-    if (res.ok) {
-      alert("募集を作成しました！");
-      setTitle("");
-      setDescription("");
-      setRequirements("");
-    } else {
-      const data = await res.json();
-      alert("エラー: " + (data.errors || "作成に失敗しました"));
-    }
-  };
+  useEffect(() => {
+    fetch("http://localhost:8080/internships", {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    })
+      .then(res => res.json())
+      .then(data => setInternships(data));
+  }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">企業ダッシュボード</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="text"
-          placeholder="募集タイトル"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <textarea
-          placeholder="募集内容"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <textarea
-          placeholder="応募要件"
-          value={requirements}
-          onChange={(e) => setRequirements(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          募集を作成
-        </button>
-      </form>
+    <div>
+      <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Intern Matching</h1>
+        <div className="flex gap-4">
+        <Link
+            href="/company/recruitment"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            募集ページの作成
+          </Link>
+          <Link
+            href="/chat"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            チャット
+          </Link>
+          <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+            ログアウト
+          </button>
+        </div>
+      </header>
+      <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">募集一覧</h1>
+
+      <ul className="space-y-4">
+        {internships.map((job) => (
+          <li key={job.id} className="p-4 border rounded flex justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">{job.title}</h2>
+              <p className="text-gray-600">{job.description}</p>
+              <p className="text-gray-600">{job.requirements}</p>
+              <span className="text-sm text-gray-500">
+                ステータス: {job.status === "open" ? "募集中" : "募集終了"}
+              </span>
+            </div>
+            <button
+              onClick={() => router.push(`/company/${job.id}/edit`)}
+              className="px-3 py-1 bg-green-600 text-white rounded"
+            >
+              編集
+            </button>
+
+
+          </li>
+        ))}
+      </ul>
+    </div>
     </div>
   );
 }

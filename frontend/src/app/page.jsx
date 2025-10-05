@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div>            
       <header className="flex justify-between items-center p-4 bg-blue-600 text-white">
-      <h1 className="text-xl font-bold">ScoutService</h1>
+      <h1 className="text-xl font-bold">Intern Matching</h1>
       <div className="flex gap-4">
       </div>
       </header>
