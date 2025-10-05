@@ -13,7 +13,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           id: resource.id,
           email: resource.email,
           name: resource.name,
-          role: resource.role # ← "intern" or "company" で返る
+          role: resource.role 
         },
         message: 'Signed up successfully.'
       }, status: :ok

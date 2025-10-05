@@ -10,7 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_02_074241) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_03_162332) do
+  create_table "chat_rooms", force: :cascade do |t|
+    t.integer "internship_id", null: false
+    t.integer "applicant_id", null: false
+    t.integer "company_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["applicant_id"], name: "index_chat_rooms_on_applicant_id"
+    t.index ["company_id"], name: "index_chat_rooms_on_company_id"
+    t.index ["internship_id", "applicant_id", "company_id"], name: "unique_chat_room", unique: true
+    t.index ["internship_id"], name: "index_chat_rooms_on_internship_id"
+  end
+
+  create_table "entries", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "internship_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["internship_id"], name: "index_entries_on_internship_id"
+    t.index ["user_id"], name: "index_entries_on_user_id"
+  end
+
   create_table "internships", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -18,6 +39,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_074241) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
     t.index ["user_id"], name: "index_internships_on_user_id"
   end
 
@@ -27,6 +49,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_074241) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.integer "chat_room_id", null: false
+    t.integer "user_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_room_id"], name: "index_messages_on_chat_room_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -43,5 +75,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_02_074241) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "chat_rooms", "internships"
+  add_foreign_key "chat_rooms", "users", column: "applicant_id"
+  add_foreign_key "chat_rooms", "users", column: "company_id"
+  add_foreign_key "entries", "internships"
+  add_foreign_key "entries", "users"
   add_foreign_key "internships", "users"
+  add_foreign_key "messages", "chat_rooms"
+  add_foreign_key "messages", "users"
 end
