@@ -33,6 +33,8 @@ export default function Home() {
 
       const data = await res.json();
       localStorage.setItem("token", data.token); // トークンを保存
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       alert("ログイン成功！");
       if (data.user.role === "intern"){
         router.push('/mainpage')

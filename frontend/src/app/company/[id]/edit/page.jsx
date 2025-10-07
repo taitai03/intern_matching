@@ -6,6 +6,7 @@ export default function EditInternship() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("open");
+  const [rooms, setRooms] = useState([]);
   const [requirement,setRequirement]=useState('')
   const router = useRouter();
   const params = useParams(); // URLの [id] を取得
@@ -31,6 +32,12 @@ export default function EditInternship() {
     };
     fetchInternship();
   }, [params.id]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/chat_rooms")
+      .then(res => res.json())
+      .then(setRooms)
+  }, [])
 
   // 更新処理
   const handleUpdate = async (e) => {

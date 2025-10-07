@@ -18,6 +18,7 @@ class MessagesController < ApplicationController
         content: message.content,
         user_id: message.user_id,
         user_name: message.user.name,
+        user: { id: current_user.id, name: current_user.name },
         created_at: message.created_at
       })
       render json: message.as_json(include: { user: { only: [:id, :name] } }), status: :created
