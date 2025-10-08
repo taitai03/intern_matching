@@ -58,6 +58,14 @@ export default function ChatRoom() {
     }
   }
 
+  const handleLogout = () => {
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token"); // JWTなど使っている場合も削除
+    sessionStorage.clear();
+    router.push("/auth/login"); // 例: ログインページに戻す
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
     {/* ヘッダー */}
@@ -76,7 +84,7 @@ export default function ChatRoom() {
           >
             チャット
           </Link>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
             ログアウト
           </button>
         </div>

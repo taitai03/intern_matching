@@ -16,6 +16,14 @@ export default function CompanyDashboard() {
       .then(data => setInternships(data));
   }, []);
 
+  const handleLogout = () => {
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token"); // JWTなど使っている場合も削除
+    sessionStorage.clear();
+    router.push("/"); // 例: ログインページに戻す
+  };
+
   return (
     <div>
       <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
@@ -33,7 +41,7 @@ export default function CompanyDashboard() {
           >
             チャット
           </Link>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
             ログアウト
           </button>
         </div>

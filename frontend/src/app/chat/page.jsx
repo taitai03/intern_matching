@@ -4,7 +4,24 @@ import { useEffect, useState } from "react"
 
 export default function ChatList() {
   const [rooms, setRooms] = useState([])
+  const [currentUser,setCurrentUser]=useState([])
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setCurrentUser(parsedUser);
+        console.log("ユーザーデータ:", parsedUser);
+      } catch (error) {
+        console.error("JSON解析エラー:", error);
+      }
+    }
+  }, []); 
 
+  if (!currentUser) {
+    return <div>ユーザー情報を読み込み中...</div>;
+  }
+  const href = currentUser.role === "company" ? "/company" : "/mainpage";
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch("http://localhost:8080/chat_rooms",{      headers: {
@@ -19,18 +36,26 @@ export default function ChatList() {
       })
   }, [])
 
+  const handleLogout = () => {
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token"); // JWTなど使っている場合も削除
+    sessionStorage.clear();
+    router.push("/atuh/login"); // 例: ログインページに戻す
+  };
+
   return (
     <div>
         <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold">Intern Matching</h1>
           <div className="flex gap-4">
             <Link
-              href="/mainpage"
+              href={href}
               className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
             >
               ホームへ
             </Link>
-            <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+            <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
               ログアウト
             </button>
           </div>

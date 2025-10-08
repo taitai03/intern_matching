@@ -13,11 +13,9 @@ export default function InternshipDetail() {
 
   // インターン詳細を取得
   useEffect(() => {
-    console.log("詳細画面で受け取ったID:", id)
     if (!id) return
   
     const token = localStorage.getItem("token")
-    console.log("送信するトークン:", token)
   
     fetch(`http://localhost:8080/internships/${id}`, {
       headers: {
@@ -31,7 +29,6 @@ export default function InternshipDetail() {
         return res.json()
       })
       .then(data => {
-        console.log("APIから返ってきたデータ:", data)
         setInternship(data)
         setLoading(false)
       })
@@ -44,7 +41,6 @@ export default function InternshipDetail() {
 
   const handleApply = async () => {
     const token = localStorage.getItem("token")
-    console.log("送信するトークン:", token)
     const res = await fetch(`http://localhost:8080/internships/${id}/entries`, {
       method: "POST",
       body: JSON.stringify({ internship_id: id }),
@@ -52,7 +48,6 @@ export default function InternshipDetail() {
       "Content-Type": "application/json" },
     })
     const data = await res.json()
-    console.log("エントリーAPIのレスポンス:", data)
     if (res.ok) {
       alert("応募完了！")
       router.push(`/chat/${data.chat_room_id}`) // 応募後にチャット画面へ
@@ -63,19 +58,43 @@ export default function InternshipDetail() {
   if (!internship) return <p>インターンが見つかりませんでした。</p>
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">{internship.title}</h1>
-      <p className="mb-2">{internship.description}</p>
-      <p className="mb-4 text-gray-600">
-        ステータス: {internship.status === "open" ? "募集中" : "募集終了"}
-      </p>
-      <button
-        onClick={handleApply}
-        disabled={internship.status !== "open"}
-        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-      >
-        応募する
-      </button>
-    </div>
+<div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+    {internship.title}
+  </h1>
+
+  <p className="text-gray-700 leading-relaxed mb-6">
+    {internship.description}
+  </p>
+
+  <p className="text-gray-700 leading-relaxed mb-6">{internship.requirements}</p>
+
+
+  <div className="flex items-center justify-between mb-8">
+    <span
+      className={`px-3 py-1 rounded-full text-sm font-medium ${
+        internship.status === "open"
+          ? "bg-green-100 text-green-700"
+          : "bg-gray-200 text-gray-600"
+      }`}
+    >
+      {internship.status === "open" ? "募集中" : "募集終了"}
+    </span>
+  </div>
+
+  <button
+    onClick={handleApply}
+    disabled={internship.status !== "open"}
+    className={`w-full py-3 rounded-xl font-semibold transition 
+      ${
+        internship.status === "open"
+          ? "bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] cursor-pointer"
+          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+      }`}
+  >
+    {internship.status === "open" ? "応募する" : "募集は終了しました"}
+  </button>
+</div>
+
   )
 }

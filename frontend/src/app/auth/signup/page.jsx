@@ -38,14 +38,9 @@ export default function SignupPage() {
         }),
       });
       const data = await res.json();
-      console.log("ログインレスポンス:", data);
       if (res.ok) {
         setMessage('サインアップ成功！ログインしてください。');
-        if (data.user.role === "intern"){
-          router.push('/mainpage')
-        }else{
-          router.push('/company')
-        }
+        router.push('/'); 
       } else {
         setMessage(`エラー: ${JSON.stringify(data)}`);
       }
@@ -171,9 +166,6 @@ export default function SignupPage() {
                   登録
                 </button>
               </div>
-              {message && (
-              <p className="mt-4 text-center text-sm text-red-500">{message}</p>
-            )}
             </div>
           </div>
         </div>

@@ -34,7 +34,9 @@ export default function EditInternship() {
   }, [params.id]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/chat_rooms")
+    fetch("http://localhost:8080/chat_rooms", {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    })
       .then(res => res.json())
       .then(setRooms)
   }, [])

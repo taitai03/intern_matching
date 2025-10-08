@@ -5,32 +5,44 @@ import { useRouter } from 'next/navigation'
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter()
+  const [role,setRole]=useState("")
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:8080/users/sign_in", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user: { 
-          email: email,
-          password: password, },
-      }),
-    });
+    try {
+      const res = await fetch("http://localhost:8080/users/sign_in", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: {
+            email,
+            password,
+            role
+          },
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("ログインに失敗しました");
+      }
 
-    if (!res.ok) {
-      alert("ログイン失敗しました");
-      return;
+      const data = await res.json();
+      localStorage.setItem("token", data.token); // トークンを保存
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      alert("ログイン成功！");
+      if (data.user.role === "intern"){
+        router.push('/mainpage')
+      }else{
+        router.push('/company')
+      }
+
+    } catch (err) {
+      alert(err.message);
     }
-
-    // JWT をレスポンスヘッダーから取得
-    const token = res.headers.get("Authorization");
-    localStorage.setItem("token", token);
-
-    alert("ログイン成功！");
-    router.push('/mainpage')
   };
 
   return (
