@@ -7,7 +7,7 @@ export default function EditInternship() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("open");
   const [rooms, setRooms] = useState([]);
-  const [requirement,setRequirement]=useState('')
+  const [requirements,setRequirements]=useState("")
   const router = useRouter();
   const params = useParams(); // URLの [id] を取得
 
@@ -23,7 +23,7 @@ export default function EditInternship() {
         const data = await res.json();
         setTitle(data.title);
         setDescription(data.description);
-        setRequirement(data.requirements)
+        setRequirements(data.requirements)
         setStatus(data.status);
       } catch (err) {
         console.error(err);
@@ -50,7 +50,7 @@ export default function EditInternship() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ internship: { title, description, status,requirement } }),
+      body: JSON.stringify({ internship: { title, description, status,requirements } }),
     });
 
     if (res.ok) {
@@ -76,8 +76,8 @@ export default function EditInternship() {
           className="w-full border p-2 rounded"
         />
         <textarea
-          value={requirement}
-          onChange={(e) => setRequirement(e.target.value)}
+          value={requirements}
+          onChange={(e) => setRequirements(e.target.value)}
           className="w-full border p-2 rounded"
         />
         <select

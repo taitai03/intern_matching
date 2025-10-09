@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -7,7 +7,16 @@ export default function NewInternship() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
+  const [genreId, setGenreId] = useState("");
+  const [genres, setGenres] = useState([]);
   const router = useRouter();
+
+  useEffect(() => {
+    // ジャンル一覧をRailsから取得
+    fetch("http://localhost:8080/genres")
+      .then(res => res.json())
+      .then(data => setGenres(data));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +26,7 @@ export default function NewInternship() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ internship: { title, description, status: "open" ,requirements} }),
+      body: JSON.stringify({ internship: { title, description, status: "open" ,requirements,genre_id:genreId} }),
     });
 
     if (res.ok) {
@@ -97,6 +106,17 @@ export default function NewInternship() {
                 className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-xl shadow-sm p-3 text-gray-900 h-28 resize-none"
               />
             </div>
+
+            <select
+              value={genreId}
+              onChange={(e) => setGenreId(e.target.value)}
+              className="w-full border p-2 mb-3 rounded"
+            >
+              <option value="">ジャンルを選択</option>
+              {genres.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
 
             {/* ボタン */}
             <div className="flex justify-end">

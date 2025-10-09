@@ -6,8 +6,13 @@ class InternshipsController < ApplicationController
 
   # GET /internships
   def index
-    @internships = Internship.all
-    render json: @internships
+    if params[:genre_id].present?
+      internships = Internship.includes(:genre).where(genre_id: params[:genre_id])
+    else
+      internships = Internship.includes(:genre).all
+    end
+
+    render json: internships.as_json(include: :genre)
   end
 
   # GET /internships/:id
@@ -17,7 +22,7 @@ class InternshipsController < ApplicationController
 
   # POST /internships
   def create
-    internship = current_user.internships.build(internship_params)
+    internship = current_user.internships.new(internship_params)
     if internship.save
       render json: internship, status: :created
     else
@@ -44,7 +49,7 @@ class InternshipsController < ApplicationController
   end
 
   def internship_params
-    params.require(:internship).permit(:title, :description, :requirements, :status)
+    params.require(:internship).permit(:title, :description, :requirements, :status,:genre_id)
   end
 
   def require_company!

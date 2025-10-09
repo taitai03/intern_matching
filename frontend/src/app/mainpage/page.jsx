@@ -5,18 +5,31 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 export default function MainPage() {
   const [internships, setInternships] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [genreId, setGenreId] = useState("")
+  const [selectedGenre, setSelectedGenre] = useState("");
   const [rooms,setRooms]=useState([])
   const router = useRouter();
   const token = localStorage.getItem("token")
 
+  useEffect(() => {
+    fetch("http://localhost:8080/genres")
+      .then((res) => res.json())
+      .then((data) => setGenres(data));
+  }, []);
+
 
     useEffect(() => {
-      fetch("http://localhost:8080/internships", {
+      let url = "http://localhost:8080/internships";
+      if (selectedGenre) {
+        url += `?genre_id=${selectedGenre}`;
+      }
+      fetch(url, {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       })
         .then(res => res.json())
         .then(data => setInternships(data));
-    }, []);
+    }, [selectedGenre]);
 
     useEffect(() => {
       fetch("http://localhost:8080/chat_rooms", {
@@ -59,6 +72,20 @@ export default function MainPage() {
       <main className="flex-1 p-6">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">募集一覧</h2>
 
+            {/* ジャンル選択 */}
+            <select
+        value={selectedGenre}
+        onChange={(e) => setSelectedGenre(e.target.value)}
+        className="border p-2 rounded mb-4"
+      >
+        <option value="">すべてのジャンル</option>
+        {genres.map((g) => (
+          <option key={g.id} value={g.id}>
+            {g.name}
+          </option>
+        ))}
+      </select>
+
       <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {internships.map((job) => (
           <li
@@ -73,8 +100,8 @@ export default function MainPage() {
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
                 {job.title}
               </h3>
-              <p className="text-gray-600 text-sm mb-2">{job.description}</p>
-              <p className="text-gray-500 text-sm mb-4">{job.requirements}</p>
+              <p className="text-gray-600 text-sm mb-2">業務内容：{job.description}</p>
+              <p className="text-gray-500 text-sm mb-4">応募要件：{job.requirements}</p>
               <span
                 className={`text-sm font-medium ${
                   job.status === "open" ? "text-green-600" : "text-gray-400"

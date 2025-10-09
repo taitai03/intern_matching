@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_03_162332) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_09_001206) do
   create_table "chat_rooms", force: :cascade do |t|
     t.integer "internship_id", null: false
     t.integer "applicant_id", null: false
@@ -32,6 +32,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_03_162332) do
     t.index ["user_id"], name: "index_entries_on_user_id"
   end
 
+  create_table "genres", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "internships", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -40,6 +46,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_03_162332) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0, null: false
+    t.integer "genre_id"
+    t.index ["genre_id"], name: "index_internships_on_genre_id"
     t.index ["user_id"], name: "index_internships_on_user_id"
   end
 
@@ -80,6 +88,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_03_162332) do
   add_foreign_key "chat_rooms", "users", column: "company_id"
   add_foreign_key "entries", "internships"
   add_foreign_key "entries", "users"
+  add_foreign_key "internships", "genres"
   add_foreign_key "internships", "users"
   add_foreign_key "messages", "chat_rooms"
   add_foreign_key "messages", "users"
