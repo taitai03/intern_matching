@@ -13,7 +13,27 @@ export default function ChatRoom() {
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUser,setCurrentUser]=useState([])
   const router = useRouter();
+  
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setCurrentUser(parsedUser);
+        console.log("ユーザーデータ:", parsedUser);
+      } catch (error) {
+        console.error("JSON解析エラー:", error);
+      }
+    }
+  }, []); 
+
+  if (!currentUser) {
+    return <div>ユーザー情報を読み込み中...</div>;
+  }
+  const href = currentUser.role === "company" ? "/company" : "/mainpage";
   
 
   useEffect(() => {
@@ -76,12 +96,12 @@ export default function ChatRoom() {
     <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
       チャットルーム
       <div className="flex gap-4">
-          <Link
-              href="/mainpage"
+            <Link
+              href={href}
               className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
             >
-            ホームへ
-          </Link>
+              ホームへ
+            </Link>
           <Link
             href="/chat"
             className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"

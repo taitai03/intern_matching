@@ -28,6 +28,7 @@ export default function ChatList() {
     return <div>ユーザー情報を読み込み中...</div>;
   }
   const href = currentUser.role === "company" ? "/company" : "/mainpage";
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch("http://localhost:8080/chat_rooms",{      headers: {

@@ -3,6 +3,7 @@ class InternshipsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_company!, only: [:create, :update]
   before_action :set_internship, only: [:show, :update]
+  before_action :authorize_company!, only: [:update]
 
   # GET /internships
   def index
@@ -24,7 +25,11 @@ class InternshipsController < ApplicationController
 
   # GET /internships/:id
   def show
-    render json: @internship
+    if current_user.company? && @internship.user_id != current_user.id
+      return render json: { error: "他社の募集にはアクセスできません" }, status: :forbidden
+    end
+
+    render json: @internship.as_json(include: :genre,methods: :status)
   end
 
   # POST /internships
@@ -65,5 +70,11 @@ class InternshipsController < ApplicationController
 
   def require_company!
     render json: { error: "企業ユーザーのみ利用可能です" }, status: :forbidden unless current_user.company?
+  end
+
+  def authorize_company!
+    if @internship.user_id != current_user.id
+      render json: { error: "自分の投稿しか編集できません" }, status: :forbidden
+    end
   end
 end

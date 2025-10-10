@@ -3,9 +3,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import { useHandleAuthError } from "@/hooks/useHAndleAuthError";
 
 export default function CompanyDashboard() {
   useAuthRedirect(); 
+  const { handleAuthError } = useHandleAuthError();
 
   const [internships, setInternships] = useState([]);
   const router = useRouter();
@@ -24,8 +26,12 @@ export default function CompanyDashboard() {
     fetch("http://localhost:8080/internships", {
       headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
     })
-      .then(res => res.json())
-      .then(data => setInternships(data));
+    .then(async (res) => {
+      if (handleAuthError(res)) return; // ← ここで不正アクセス検知
+      const data = await res.json();
+      setInternships(data);
+    })
+    .catch((err) => console.error(err));
   }, []);
 
   const handleLogout = () => {
