@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation'
 
@@ -8,7 +8,15 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role,setRole]=useState("")
-  const router = useRouter();
+  const router = useRouter();  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const msg = sessionStorage.getItem("authMessage");
+    if (msg) {
+      setMessage(msg);
+      sessionStorage.removeItem("authMessage");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,6 +63,14 @@ export default function Home() {
       </div>
       </header>
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
+      {message && (
+        <div className=" bg-red-500 text-white px-4 py-2 rounded shadow-md">
+          {message}
+        </div>
+      )}
+      <div className="p-6 text-center">
+    </div>
+
       {/* ログインフォーム */}
       <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-4 text-center">ログイン</h1>

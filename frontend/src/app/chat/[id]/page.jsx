@@ -1,9 +1,11 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function ChatRoom() {
+  useAuthRedirect(); 
   const params = useParams()
 
   const roomId = params.id
@@ -11,6 +13,8 @@ export default function ChatRoom() {
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const router = useRouter();
+  
 
   useEffect(() => {
     if (!roomId) return

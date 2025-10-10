@@ -1,10 +1,13 @@
 // frontend/src/app/internships/[id]/page.jsx
 "use client"
 
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useRouter, useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function InternshipDetail() {
+  useAuthRedirect(); 
+  
   const router = useRouter()
   const params = useParams()   
   const id = params.id         // Promise unwrap いらない

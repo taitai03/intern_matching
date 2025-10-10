@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+
 export default function MainPage() {
+  const checking = useAuthRedirect();
+
   const [internships, setInternships] = useState([]);
   const [genres, setGenres] = useState([]);
   const [genreId, setGenreId] = useState("")
@@ -11,6 +15,7 @@ export default function MainPage() {
   const [rooms,setRooms]=useState([])
   const router = useRouter();
   const token = localStorage.getItem("token")
+  
 
   useEffect(() => {
     fetch("http://localhost:8080/genres")
@@ -19,28 +24,55 @@ export default function MainPage() {
   }, []);
 
 
-    useEffect(() => {
-      let url = "http://localhost:8080/internships";
-      if (selectedGenre) {
-        url += `?genre_id=${selectedGenre}`;
-      }
-      fetch(url, {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-      })
-        .then(res => res.json())
-        .then(data => setInternships(data));
-    }, [selectedGenre]);
-
-    useEffect(() => {
-      fetch("http://localhost:8080/chat_rooms", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/");
+      return;
+    }
+  
+    let url = "http://localhost:8080/internships";
+    if (selectedGenre) {
+      url += `?genre_id=${selectedGenre}`;
+    }
+  
+    fetch(url, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          if (res.status === 401) router.push("/");
+          throw new Error("Server Error");
         }
+        return res.json();
       })
-        .then(res => res.json())
-        .then(setRooms)
-    }, [])
+      .then(setInternships)
+      .catch((err) => console.error(err));
+  }, [selectedGenre]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/");
+      return;
+    }
+  
+    fetch("http://localhost:8080/chat_rooms", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          if (res.status === 401) router.push("/");
+          throw new Error("Server Error");
+        }
+        return res.json();
+      })
+      .then(setRooms)
+      .catch((err) => console.error(err));
+  }, []);
 
     const handleLogout = () => {
 
@@ -49,6 +81,19 @@ export default function MainPage() {
       sessionStorage.clear();
       router.push("/"); 
     };
+
+
+  if (checking){
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-700">
+      <div className="flex items-center space-x-3 mb-4 animate-pulse">
+        <div className="w-5 h-5 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-lg font-medium">認証を確認しています...</span>
+      </div>
+      <p className="text-sm text-gray-500">しばらくお待ちください</p>
+    </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

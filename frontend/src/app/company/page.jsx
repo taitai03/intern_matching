@@ -2,11 +2,23 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function CompanyDashboard() {
+  useAuthRedirect(); 
 
   const [internships, setInternships] = useState([]);
   const router = useRouter();
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
 
   useEffect(() => {
     fetch("http://localhost:8080/internships", {

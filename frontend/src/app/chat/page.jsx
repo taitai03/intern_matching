@@ -1,10 +1,16 @@
 "use client"
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function ChatList() {
+  useAuthRedirect(); 
+
   const [rooms, setRooms] = useState([])
   const [currentUser,setCurrentUser]=useState([])
+  const router = useRouter();
+  
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -41,7 +47,7 @@ export default function ChatList() {
     localStorage.removeItem("user");
     localStorage.removeItem("token"); // JWTなど使っている場合も削除
     sessionStorage.clear();
-    router.push("/atuh/login"); // 例: ログインページに戻す
+    router.push("/"); // 例: ログインページに戻す
   };
 
   return (

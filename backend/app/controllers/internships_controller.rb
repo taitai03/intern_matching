@@ -6,10 +6,17 @@ class InternshipsController < ApplicationController
 
   # GET /internships
   def index
-    if params[:genre_id].present?
-      internships = Internship.includes(:genre).where(genre_id: params[:genre_id])
+    if current_user.company?
+      # 企業ユーザーは自分が作った募集だけ
+      internships = current_user.internships.includes(:genre)
     else
+      # 学生ユーザーは全ての募集
       internships = Internship.includes(:genre).all
+    end
+  
+    # ジャンルで絞る場合
+    if params[:genre_id].present?
+      internships = internships.where(genre_id: params[:genre_id])
     end
 
     render json: internships.as_json(include: :genre)
@@ -32,6 +39,10 @@ class InternshipsController < ApplicationController
 
   # PATCH/PUT /internships/:id
   def update
+    if @internship.user_id != current_user.id
+      return render json: { error: "自分の投稿しか編集できません" }, status: :forbidden
+    end
+  
     if @internship.update(internship_params)
       render json: @internship, status: :ok
     else

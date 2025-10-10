@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function EditInternship() {
+  useAuthRedirect(); 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("open");

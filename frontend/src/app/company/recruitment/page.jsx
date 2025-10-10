@@ -2,8 +2,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function NewInternship() {
+  useAuthRedirect(); 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
