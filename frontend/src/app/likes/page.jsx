@@ -1,9 +1,12 @@
 "use client";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import  Link  from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function LikedInternships() {
+  const checking = useAuthRedirect();
+
   const [jobs, setJobs] = useState([]);
   const [genres, setGenres] = useState([]);
   const [genreId, setGenreId] = useState("")
