@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import Header from "@/components/Header";
 
 export default function ChatRoom() {
   useAuthRedirect(); 
@@ -82,37 +83,10 @@ export default function ChatRoom() {
     }
   }
 
-  const handleLogout = () => {
-
-    localStorage.removeItem("user");
-    localStorage.removeItem("token"); // JWTなど使っている場合も削除
-    sessionStorage.clear();
-    router.push("/auth/login"); // 例: ログインページに戻す
-  };
-
   return (
     <div className="flex flex-col h-screen bg-gray-100">
     {/* ヘッダー */}
-    <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
-      チャットルーム
-      <div className="flex gap-4">
-            <Link
-              href={href}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-            >
-              ホームへ
-            </Link>
-          <Link
-            href="/chat"
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            チャット
-          </Link>
-          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-            ログアウト
-          </button>
-        </div>
-    </header>
+    <Header />
 
     {/* メッセージ一覧 */}
     <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

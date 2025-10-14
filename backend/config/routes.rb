@@ -13,7 +13,10 @@ Rails.application.routes.draw do
 
   resources :internships do
     resources :entries, only: [:create, :index, :destroy,:show]
+    resource :like, only: [:create, :destroy]
   end
+
+  get '/likes', to: 'likes#index'
 
   resources :chat_rooms, only: [:index, :show, :create] do
     resources :messages, only: [:index, :create]

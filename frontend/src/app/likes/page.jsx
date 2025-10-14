@@ -1,24 +1,17 @@
 "use client";
-
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import  Link  from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthRedirect } from "@/hooks/useAuthRedirect";
-import LikeButton from "@/components/LikeButton";
-import Header from "@/components/Header";
+import { useEffect, useState } from "react";
 
-export default function MainPage() {
-  const checking = useAuthRedirect();
-
-  const [internships, setInternships] = useState([]);
+export default function LikedInternships() {
+  const [jobs, setJobs] = useState([]);
   const [genres, setGenres] = useState([]);
   const [genreId, setGenreId] = useState("")
   const [selectedGenre, setSelectedGenre] = useState("");
   const [rooms,setRooms]=useState([])
-  const [likedJobs, setLikedJobs] = useState([]);
   const router = useRouter();
-  const token = localStorage.getItem("token")
-  
+
+
 
   useEffect(() => {
     fetch("http://localhost:8080/genres")
@@ -34,7 +27,7 @@ export default function MainPage() {
       return;
     }
   
-    let url = "http://localhost:8080/internships";
+    let url = "http://localhost:8080/likes";
     if (selectedGenre) {
       url += `?genre_id=${selectedGenre}`;
     }
@@ -49,57 +42,78 @@ export default function MainPage() {
         }
         return res.json();
       })
-      .then(setInternships)
+      .then(setJobs)
       .catch((err) => console.error(err));
   }, [selectedGenre]);
 
-
-  const fetchLikes = async () => {
-    const res = await fetch("http://localhost:8080/likes", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    });
-    const data = await res.json();
-    setLikedJobs(data.map(job => job.id));
-  };
-  
-  const handleLike = async (internshipId) => {
-    const isLiked = likedJobs.includes(internshipId);
-    const method = isLiked ? "DELETE" : "POST";
-  
-    await fetch(`http://localhost:8080/internships/${internshipId}/like`, {
-      method,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-  
-    fetchLikes(); // リロードして状態を反映
-  };
-  
   useEffect(() => {
-    fetchLikes();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/");
+      return;
+    }
+  
+    fetch("http://localhost:8080/chat_rooms", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          if (res.status === 401) router.push("/");
+          throw new Error("Server Error");
+        }
+        return res.json();
+      })
+      .then(setRooms)
+      .catch((err) => console.error(err));
   }, []);
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   fetch("http://localhost:8080/likes", {
+  //     headers: { Authorization: `Bearer ${token}` }
+  //   })
+  //     .then(res => res.json())
+  //     .then(setJobs);
+  // }, []);
 
+  const handleLogout = () => {
 
-  if (checking){
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-700">
-      <div className="flex items-center space-x-3 mb-4 animate-pulse">
-        <div className="w-5 h-5 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-lg font-medium">認証を確認しています...</span>
-      </div>
-      <p className="text-sm text-gray-500">しばらくお待ちください</p>
-    </div>
-    );
-  }
-  
+    localStorage.removeItem("user");
+    localStorage.removeItem("token"); 
+    sessionStorage.clear();
+    router.push("/"); 
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-
-      <Header />
+      {/* ヘッダー */}
+      <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Intern Matching</h1>
+        <div className="flex gap-4">
+          <Link
+            href="/mainpage"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            ホームへ
+          </Link>
+          <Link
+            href="/chat"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            チャット
+          </Link>
+          <button onClick={handleLogout} className="cursor-pointer bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+            ログアウト
+          </button>
+        </div>
+      </header>
 
       {/* メイン */}
       <main className="flex-1 p-6">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">募集一覧</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">お気に入り一覧</h2>
 
             {/* ジャンル選択 */}
             <select
@@ -116,7 +130,7 @@ export default function MainPage() {
       </select>
 
       <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {internships.map((job) => (
+        {jobs.map((job) => (
           <li
             key={job.id}
             className="p-6 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between border border-gray-100"
@@ -142,11 +156,6 @@ export default function MainPage() {
             </div>
 
             <div className="mt-4 flex justify-end">
-            <LikeButton
-                jobId={job.id}
-                liked={likedJobs.includes(job.id)}
-                onLike={handleLike}
-              />
 
               <button
                 onClick={() => router.push(`/internships/${job.id}`)}

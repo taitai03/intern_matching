@@ -10,4 +10,6 @@ class User < ApplicationRecord
   self.skip_session_storage = [:http_auth, :params_auth]
 
   has_many :internships, dependent: :destroy
+  has_many :likes, dependent: :destroy
+has_many :liked_internships, through: :likes, source: :internship
 end

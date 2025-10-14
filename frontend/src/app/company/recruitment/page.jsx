@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import Header from "@/components/Header";
 
 export default function NewInternship() {
   useAuthRedirect(); 
@@ -48,26 +49,7 @@ export default function NewInternship() {
 
   return (
     <div>
-      <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Intern Matching</h1>
-        <div className="flex gap-4">
-        <Link
-            href="/company/"
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            投稿済み募集一覧
-          </Link>
-          <Link
-            href="/chat"
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            チャット
-          </Link>
-          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-            ログアウト
-          </button>
-        </div>
-      </header>
+      <Header />
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
           <h1 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">

@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useHandleAuthError } from "@/hooks/useHAndleAuthError";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 export default function EditInternship() {
   useAuthRedirect(); 
@@ -84,32 +85,7 @@ export default function EditInternship() {
 
   return (
     <div>
-      <header className="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Intern Matching</h1>
-        <div className="flex gap-4">
-        <Link
-            href="/company"
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            募集済み一覧
-          </Link>
-        <Link
-            href="/company/recruitment"
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            募集ページの作成
-          </Link>
-          <Link
-            href="/chat"
-            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            チャット
-          </Link>
-          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-            ログアウト
-          </button>
-        </div>
-      </header>
+      <Header />
       <div className="p-6">
       <h1 className="text-xl font-bold mb-4">募集内容を編集</h1>
       <form onSubmit={handleUpdate} className="space-y-4">
